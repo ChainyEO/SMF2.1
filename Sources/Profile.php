@@ -820,8 +820,8 @@ function profile_popup($memID)
 		array(
 			'menu' => 'edit_profile',
 			'area' => 'lists',
-			'url' => $scripturl . '?action=profile;area=lists;sa=ignore',
-			'title' => $txt['popup_ignore'],
+			'url' => $scripturl . '?action=profile;area=lists;sa=buddies',
+			'title' => $txt['popup_buddies'],
 		),
 		array(
 			'menu' => 'edit_profile',
