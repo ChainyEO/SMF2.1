@@ -2346,12 +2346,8 @@ function template_issueWarning()
 	// Previous warnings?
 	template_show_list('view_warnings');
 
-	// Do our best to get pretty javascript enabled.
 	echo '
-	<script><!-- // --><![CDATA[
-		document.getElementById(\'warndiv1\').style.display = "";
-		document.getElementById(\'preview_button\').style.display = "none";
-		document.getElementById(\'warndiv2\').style.display = "none";';
+	<script><!-- // --><![CDATA[';
 
 	if (!$context['user']['is_owner'])
 		echo '
@@ -2655,7 +2651,7 @@ function template_profile_signature_modify()
 
 	if (!empty($context['show_preview_button']))
 		echo '
-						<input type="submit" name="preview_signature" id="preview_button" value="', $txt['preview_signature'], '" class="button_submit">';
+						<input type="button" name="preview_signature" id="preview_button" value="', $txt['preview_signature'], '" class="button_submit">';
 
 	if ($context['signature_warning'])
 		echo '
@@ -2895,98 +2891,6 @@ function template_profile_smiley_pick()
 	echo '
 								</select> <img id="smileypr" class="centericon" src="', $context['member']['smiley_set']['id'] != 'none' ? $modSettings['smileys_url'] . '/' . ($context['member']['smiley_set']['id'] != '' ? $context['member']['smiley_set']['id'] : (!empty($settings['smiley_sets_default']) ? $settings['smiley_sets_default'] : $modSettings['smiley_sets_default'])) . '/smiley.gif' : $settings['images_url'] . '/blank.png', '" alt=":)"  style="padding-left: 20px;">
 							</dd>';
-}
-
-// Change the way you login to the forum.
-function template_authentication_method()
-{
-	global $context, $settings, $scripturl, $modSettings, $txt;
-
-	// The main header!
-	echo '
-		<form action="', $scripturl, '?action=profile;area=authentication;save" method="post" accept-charset="', $context['character_set'], '" name="creator" id="creator" enctype="multipart/form-data">
-			<div class="cat_bar">
-				<h3 class="catbg profile_hd">
-					', $txt['authentication'], '
-				</h3>
-			</div>
-			<p class="information">', $txt['change_authentication'], '</p>
-			<div class="roundframe">
-				<dl>
-					<dt>
-						<input type="radio" onclick="updateAuthMethod();" name="authenticate" value="openid" id="auth_openid"', $context['auth_method'] == 'openid' ? ' checked' : '', ' class="input_radio"><label for="auth_openid"><strong>', $txt['authenticate_openid'], '</strong></label>&nbsp;<em><a href="', $scripturl, '?action=helpadmin;help=register_openid" onclick="return reqOverlayDiv(this.href);" class="help"><span class="generic_icons help" title="', $txt['help'],'"></span></a></em><br>
-						<input type="radio" onclick="updateAuthMethod();" name="authenticate" value="passwd" id="auth_pass"', $context['auth_method'] == 'password' ? ' checked' : '', ' class="input_radio"><label for="auth_pass"><strong>', $txt['authenticate_password'], '</strong></label>
-					</dt>
-					<dd>
-						<dl id="auth_openid_div">
-							<dt>
-								<em>', $txt['authenticate_openid_url'], ':</em>
-							</dt>
-							<dd>
-								<input type="text" name="openid_identifier" id="openid_url" size="30" tabindex="', $context['tabindex']++, '" value="', $context['member']['openid_uri'], '" class="input_text openid_login">
-							</dd>
-						</dl>
-						<dl id="auth_pass_div">
-							<dt>
-								<em>', $txt['choose_pass'], ':</em>
-							</dt>
-							<dd>
-								<input type="password" name="passwrd1" id="smf_autov_pwmain" size="30" tabindex="', $context['tabindex']++, '" class="input_password">
-								<span id="smf_autov_pwmain_div" style="display: none;"><span id="smf_autov_pwmain_img" class="generic_icons invalid centericon"></span></span>
-							</dd>
-							<dt>
-								<em>', $txt['verify_pass'], ':</em>
-							</dt>
-							<dd>
-								<input type="password" name="passwrd2" id="smf_autov_pwverify" size="30" tabindex="', $context['tabindex']++, '" class="input_password">
-								<span id="smf_autov_pwverify_div" style="display: none;"><span id="smf_autov_pwverify_img" class="generic_icons valid"></span></span>
-							</dd>
-						</dl>
-					</dd>
-				</dl>';
-
-	if ($context['require_password'])
-		echo '
-				<hr width="100%" size="1" class="hrcolor clear">
-				<dl>
-					<dt>
-						<strong', isset($context['modify_error']['bad_password']) || isset($context['modify_error']['no_password']) ? ' class="error"' : '', '>', $txt['current_password'], ': </strong><br>
-						<span class="smalltext">', $txt['required_security_reasons'], '</span>
-					</dt>
-					<dd>
-						<input type="password" name="oldpasswrd" tabindex="', $context['tabindex']++, '" size="20" style="margin-right: 4ex;" class="input_password">
-					</dd>
-				</dl>';
-
-	echo '
-				<hr class="hrcolor">';
-
-	if (!empty($context['token_check']))
-		echo '
-				<input type="hidden" name="', $context[$context['token_check'] . '_token_var'], '" value="', $context[$context['token_check'] . '_token'], '">';
-
-	echo '
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="u" value="', $context['id_member'], '">
-				<input type="hidden" name="sa" value="', $context['menu_item_selected'], '">
-				<input type="submit" value="', $txt['change_profile'], '" class="button_submit">
-			</div>
-		</form>';
-
-	// The password stuff.
-	echo '
-	<script><!-- // --><![CDATA[
-	var regTextStrings = {
-		"password_short": "', $txt['registration_password_short'], '",
-		"password_reserved": "', $txt['registration_password_reserved'], '",
-		"password_numbercase": "', $txt['registration_password_numbercase'], '",
-		"password_no_match": "', $txt['registration_password_no_match'], '",
-		"password_valid": "', $txt['registration_password_valid'], '"
-	};
-	var verificationHandle = new smfRegister("creator", ', empty($modSettings['password_strength']) ? 0 : $modSettings['password_strength'], ', regTextStrings);
-	var currentAuthMethod = \'passwd\';
-	updateAuthMethod();
-	// ]]></script>';
 }
 
 ?>
